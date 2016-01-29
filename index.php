@@ -39,6 +39,15 @@
                 font-style: italic;
                 padding:8px;
             }
+
+            input[type=password]{
+                border-radius: 10px;
+                border-style: solid;
+                border-color: rgb(255,154,104);
+                color: rgb(171,171,171);
+                font-style: italic;
+                padding:8px;
+            }
             
             input[type=submit]{
                 width: 84px;
@@ -117,7 +126,7 @@
         <!-- Login Form -->
         <form id="loginForm" name="form1" method="POST" action="index.php">
             <input type="text" name="name" placeholder="id"><br>
-            <input type="text" name="pass" placeholder="password"><br>
+            <input type="password" name="pass" placeholder="password"><br>
             <input type="submit" name="in" value="SIGN IN">
             <input type="submit" name="up" value="SIGN UP"> <br>
 
@@ -125,7 +134,32 @@
             <?php
                 if( isset( $_POST[ 'in' ] ) ) {
                     /*Login Attempt*/
-                    header( 'Location: home.php' );
+                    //header( 'Location: home.php' );
+
+                    /*
+                        Database connection and username+password check
+                    */
+                    // database connection script
+                    require 'jhotika_db_connection.php';
+
+                    // getting input values
+                    $input_user_id = $_POST['name'];
+                    $input_user_pass = $_POST['pass'];
+
+                    // query
+                    $users_query_username="select * from users where user_id='".$input_user_id."'";
+                    $result_table = mysql_query($users_query_username);
+
+                    // creating associative array and checking
+                    if( $row=mysql_fetch_assoc($result_table) ) {
+                        if( $row['password']==$input_user_pass ) {
+                            header( 'Location: home.php' );
+                        } else {
+                            echo '<p id="warning" >&#10008; Wrong password!</p>';    
+                        }
+                    } else {
+                        echo '<p id="warning" >&#10008; Username not registered!</p>';
+                    }
                 } else if( isset( $_POST[ 'up' ] ) ) {
                     /*Sign up attempt*/
                     header( 'Location: sign_up.php' );
